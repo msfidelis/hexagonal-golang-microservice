@@ -1,0 +1,44 @@
+version: "3.2"
+services:
+
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile.dev
+    environment:
+      - ENVIRONMENT=dev
+    ports:
+      - 8080:8080
+    volumes:
+      - ./:/go/src/app
+    networks: 
+      - app
+
+  db:
+    image: postgres:13.3-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: app
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+        - 5432:5432
+    networks:
+      - app
+  
+  redis:
+    image: redis:6.2-alpine
+    ports:
+        - 6379:6379
+    networks: 
+      - app
+
+networks:
+  app:
+    driver: bridge
+
+volumes:
+  postgres:
+  redis:
